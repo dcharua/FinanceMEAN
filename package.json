@@ -1,0 +1,27 @@
+{
+  "name": "toptal-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "start-hot": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "cors": "*",
+    "dotenv": "^8.2.0",
+    "express": "*",
+    "jsonwebtoken": "*",
+    "mongoose": "*",
+    "nodemon": "^1.19.4",
+    "passport": "*",
+    "passport-jwt": "*",
+    "to": "^0.2.9",
+    "update": "^0.7.4"
+  },
+  "author": "Daniel Charua",
+  "license": "ISC"
+}
