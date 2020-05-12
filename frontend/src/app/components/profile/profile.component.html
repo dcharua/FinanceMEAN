@@ -1,0 +1,9 @@
+<div class="position-relative overflow-hidden p-3 p-md-3 m-md-3 text-center bg-light">
+    <div class="col-md-8 p-lg-5 mx-auto my-6" *ngIf="user">
+      <h2 class="page-header" style="font-size: 4em; color: #009ebb;">{{user.name}}</h2>
+      <ul class="list-group">
+        <li class="list-group-item">Username: <strong class="font-weight-bold" style="font-size: 1.2em;">{{user.username}}</strong></li>
+        <li class="list-group-item">Email: <strong class="font-weight-bold" style="font-size: 1.2em;">{{user.email}}</strong></li>
+      </ul>
+    </div>
+  </div>
