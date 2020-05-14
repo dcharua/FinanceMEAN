@@ -5,6 +5,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
+import { AddSavingComponent } from './components/saving/saving.component';
 
 
 const routes: Routes = [
@@ -13,6 +14,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   // Protect the following routes if youre logged in 
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'add-saving', component: AddSavingComponent, canActivate: [AuthGuard] },
+  { path: 'edit-saving/:id', component: AddSavingComponent, canActivate: [AuthGuard] },
 ]
 
 

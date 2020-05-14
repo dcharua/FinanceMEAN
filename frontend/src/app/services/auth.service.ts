@@ -71,6 +71,9 @@ export class AuthService {
 
   // Function to return if the token is not expired
   loggedIn() {
+    if(!this.jwtHelper.isTokenExpired()){
+      this.logged.next(true);
+    }
     return !this.jwtHelper.isTokenExpired();
   }
 

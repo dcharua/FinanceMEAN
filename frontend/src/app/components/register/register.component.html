@@ -4,22 +4,22 @@
         <h2>Register</h2>
       </div>
       <div class="dropdown-divider"></div>
-      <form class="px-4 py-3" (submit)="onRegisterSubmit()">
+      <form #f="ngForm" class="px-4 py-3" (ngSubmit)="onRegisterSubmit(f)">
         <div class="form-group">
           <label>Full name</label>
-          <input type="name" class="form-control" [(ngModel)]="name" name="name" placeholder="John Doe Smith">
+          <input type="name" class="form-control" [(ngModel)]="user.name" name="name" placeholder="John Doe Smith" required>
         </div>
         <div class="form-group">
           <label>User name</label>
-          <input type="username" class="form-control" [(ngModel)]="username" name="username" placeholder="John12345">
+          <input type="username" class="form-control" [(ngModel)]="user.username" name="username" placeholder="John12345" required>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" class="form-control" [(ngModel)]="email" name="email" placeholder="email@ejemplo.com">
+          <input type="email" class="form-control" [(ngModel)]="user.email" name="email" placeholder="email@ejemplo.com" required>
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" class="form-control" [(ngModel)]="password" name="password" placeholder="password">
+          <input type="password" class="form-control" [(ngModel)]="user.password" name="password" placeholder="password" required>
         </div>
         <button type="submit" class="btn btn-primary" value="Submit">Register</button>
       </form>

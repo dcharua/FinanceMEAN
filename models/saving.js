@@ -10,7 +10,7 @@ const SavingSchema = mongoose.Schema({
     required: true
   },
   account: {
-    type: Number,
+    type: String,
     required: true
   },
   balance: {
@@ -43,39 +43,25 @@ module.exports.addSaving = function(newSaving, callback) {
 }
 
 module.exports.getAll = (callback) => {
-  Saving.find(callback).limit(1000);
+  Saving.find(callback).find();
 }
 
-module.exports.delete = (req, callback) => {
-  const { id } = req.params;
+module.exports.delete = (id, callback) => {
   Saving.findByIdAndDelete(id, callback);
 };
 
-module.exports.getOne = (req, callback) => {
-  const { id } = req.params;
+module.exports.getOne = (id, callback) => {
   Saving.findOne({ _id: id }, callback);
 };
 
 module.exports.update = (data, callback) => {
-  Saving.findByIdAndUpdate(data._id, data , callback);
+  Saving.findByIdAndUpdate({ _id: data._id}, data , callback);
 };
 
-module.exports.getAllSavings = function(userIdRecived, callback) {
+module.exports.getSavingsByUser = (userId, callback) => {
   Saving.aggregate([{
       $match: {
-        userId: userIdRecived
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        bank: 1,
-        account: 1,
-        balance: 1,
-        start: 1,
-        end: 1,
-        interest: 1,
-        taxes: 1
+        userId: userId
       }
     },
     {
@@ -86,7 +72,9 @@ module.exports.getAllSavings = function(userIdRecived, callback) {
   ], callback);
 }
 
-module.exports.getSumSavingsByUser = function(userIdRecived, callback) {
+
+
+module.exports.getSumSavingsByUser = (userIdRecived, callback)  => {
   Saving.aggregate([{
       $match: {
         userId: userIdRecived

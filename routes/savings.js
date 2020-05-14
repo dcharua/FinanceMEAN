@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 const Saving = require('../models/saving');
 
+// for all the savings route we want user to be authorized
+router.all("/*", passport.authenticate('jwt', {
+  // if it is not valid return session as false
+  session: false
+}), (req, res, next) => {
+  // if it is valid allow next();
+  next();
+});
 // Register a Saving
-router.post('/register', (req, res, next) => {
+router.post('/add', (req, res, next) => {
   // Create a new user with the information that they subscribed
   let newSaving = new Saving({
     userId: req.body.userId,
@@ -17,16 +26,16 @@ router.post('/register', (req, res, next) => {
   });
 
   // Add saving to the db
-  Saving.addEgreso(newSaving, (err, saving) => {
+  Saving.addSaving(newSaving, (err, saving) => {
     // Return the success state as false if it couldn't be registered
     if (err) {
-      res.json({
+      res.status(500).json({
         success: false,
         msg: err
       });
       // Return the success state as true if it could be registered
     } else {
-      res.json({
+      res.status(200).json({
         success: true,
         msg: err
       });
@@ -35,17 +44,16 @@ router.post('/register', (req, res, next) => {
 });
 
 
-router.get('/getAll', (req, res, next) => {
-  let userId = req.body.userId;
-
-  Saving.getAll(userId, (err, savings) => {
+router.get('/getAll', (req, res) => {
+  Saving.getAll(req, (err, savings) => {
+    console.log(req)
     if (err) {
-      res.json({
+      res.status(500).json({
         success: false,
-        msg: err
+        msg: savings
       });
     } else {
-      res.json({
+      res.status(200).json({
         success: true,
         data: savings
       });
@@ -54,15 +62,16 @@ router.get('/getAll', (req, res, next) => {
 });
 
 // Get One
-router.get('/get/:id', (req, res, next) => {
-  Saving.getOne(req, (err, data) => {
+router.get('/get/:id', (req, res) => {
+  const { id } = req.params;
+  Saving.getOne(id, (err, data) => {
     if (err) {
-      res.json({
+      res.status(500).json({
         success: false,
         msg: err
       });
     } else {
-      res.json({
+      res.status(200).json({
         success: true,
         data: data
       });
@@ -72,8 +81,9 @@ router.get('/get/:id', (req, res, next) => {
 
 
 
-router.put('/update/:id', (req, res, next) => {
+router.put('/update/:id', (req, res) => {
     let updatedSaving = new Saving({
+      _id: req.body._id,
       userId: req.body.userId,
       bank: req.body.bank,
       account: req.body.account,
@@ -86,28 +96,29 @@ router.put('/update/:id', (req, res, next) => {
 
     Saving.update(updatedSaving, (err, data) => {
         if (err) {
-            res.json({
+            res.status(500).json({
             success: false,
             msg: err
             });
         } else {
-            res.json({
+            resres.status(200).json({
             success: true,
             data: data
-            });
+          });
         }
     });
 });
 
-router.delete('/delete/:id', (req, res, next) => {
-  Saving.delete(req, (err, data) => {
+router.delete('/delete/:id', (req, res) => {
+  const { id } = req.params;
+  Saving.delete(id, (err, data) => {
         if (err) {
-            res.json({
+            res.status(500).json({
             success: false,
             msg: err
             });
         } else {
-            res.json({
+            res.status(200).json({
             success: true,
             data: data
             });
@@ -115,17 +126,16 @@ router.delete('/delete/:id', (req, res, next) => {
     });
 });
 // Get sum of savings
-router.get('/getSumSavingsByUser', (req, res, next) => {
-  let userId = req.body.userId;
-
-  Saving.getSumSavingsByUser(userId, (err, total) => {
+router.post('/getSumSavingsByUser', (req, res) => {
+  const { id } = req.params;
+  Saving.getSumSavingsByUser(id, (err, total) => {
     if (err) {
-      res.json({
+      res.status(500).json({
         success: false,
         msg: err
       });
     } else {
-      res.json({
+      res.status(200).json({
         success: true,
         data: total
       });
@@ -133,20 +143,19 @@ router.get('/getSumSavingsByUser', (req, res, next) => {
   });
 });
 
-// Get sum of savings
-router.get('/getAllusers', (req, res, next) => {
-  let userId = req.body.userId;
-
-  Saving.getSumSavingsByUser(userId, (err, total) => {
+// Get savings by user
+router.get('/getSavingsByUser/:id', (req, res) => {
+  const { id } = req.params;
+  Saving.getSavingsByUser(id, (err, data) => {
     if (err) {
-      res.json({
+      res.status(500).json({
         success: false,
         msg: err
       });
     } else {
-      res.json({
+      res.status(200).json({
         success: true,
-        data: total
+        data: data
       });
     }
   });

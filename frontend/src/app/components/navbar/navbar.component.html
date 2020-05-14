@@ -9,7 +9,6 @@
       </ul>
       <ul class=" navbar-nav mt-auto">
         <li *ngIf="loggedIn" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/profile']">Profile</a></li>
-  
         <li *ngIf="!loggedIn" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/login']">Login</a></li>
         <li *ngIf="!loggedIn" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/register']">Register</a></li>
         <li *ngIf="loggedIn" class="nav-item"><a class="nav-link" (click)="onLogoutClick()">LogOut</a></li>

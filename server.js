@@ -21,13 +21,15 @@ mongoose.connect(config.database, {
 
 // Connect to the database and log out if it was successful
 mongoose.connection.on('connected', () => {
-  console.log('Connected to the database ' + config.database);
+  console.log('Connected to the database');
 });
 
 // Logout if the connect was failed
 mongoose.connection.on('error', (err) => {
   console.log('Database error: ' + err);
 });
+
+mongoose.set('useFindAndModify', false);
 
 // Initialize Express
 const app = express();

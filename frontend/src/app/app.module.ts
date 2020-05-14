@@ -14,6 +14,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 
 // Services
 import { ValidateService } from './services/validate.service';
+import { SavingService } from './services/saving.service';
 import { AuthService } from './services/auth.service';
 
 // Libraries
@@ -22,6 +23,7 @@ import { AuthGuard } from './guards/auth.guard';
 
 
 import { ToastrModule } from 'ngx-toastr';
+import { AddSavingComponent } from './components/saving/saving.component';
 
 
 @NgModule({
@@ -31,7 +33,8 @@ import { ToastrModule } from 'ngx-toastr';
     HomeComponent,
     LoginComponent,
     NavbarComponent,
-    ProfileComponent
+    ProfileComponent,
+    AddSavingComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +55,7 @@ import { ToastrModule } from 'ngx-toastr';
   ],
   providers: [
     ValidateService,
+    SavingService,
     AuthService,
     AuthGuard
   ],
