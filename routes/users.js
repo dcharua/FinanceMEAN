@@ -69,9 +69,6 @@ router.post('/authenticate', (req, res, next) => {
 
       // Check the password by encripting it and compare it with the one in the db
       if (isMatch) {
-        /*const token = jwt.sign(user, config.secret, {
-          expiresIn: 604800 // 1 week
-        });*/
         // Create a token that is going to be useful for one week
         const token = jwt.sign(user.toJSON(), config.secret, {
           expiresIn: 604800 // 1 week
