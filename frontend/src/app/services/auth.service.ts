@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from 'src/environments/environment';
 import { Subject } from 'rxjs';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,11 @@ export class AuthService {
     private http: HttpClient,
     // Import the JWT service
     public jwtHelper: JwtHelperService
-  ) { }
+  ) { 
+    this.loadToken();
+    this.loadUser();
+    this.loggedIn();
+  }
 
   // Function to register the user
   registerUser(user) {
@@ -41,8 +46,6 @@ export class AuthService {
   }
 
   getProfile() {
-    // Get the value storaged in local storage
-    this.loadToken();
     // Set a header value
     const  headers = new  HttpHeaders().set("Authorization", this.authToken);
     // Add the content type: json | Add the value to a header
@@ -50,6 +53,50 @@ export class AuthService {
     // Return an observable with the response to our server
     return this.http.get(environment.apiUrl + 'users/profile', { headers });
   }
+
+  /// MANAGER ROUTES
+  getUsers(){
+    // Set a header value
+    const  headers = new  HttpHeaders().set("Authorization", this.authToken);
+    // Add the content type: json | Add the value to a header
+    headers.append('Content-Type', 'application/json');
+    // Return an observable with the response to our server
+    return this.http.get(environment.apiUrl + 'users/manager/getUsers', { headers });
+  }
+
+  getUserbyId(id:string){
+    // Set a header value
+   const  headers = new  HttpHeaders().set("Authorization", this.authToken);
+   // Add the content type: json | Add the value to a header
+   headers.append('Content-Type', 'application/json');
+   // Return an observable with the response to our server  
+   return this.http.get(environment.apiUrl + 'users/manager/get/' + id, { headers });
+   // Map the response to json
+ }
+
+ updateUser(user:User){
+  // Set a header value
+  const  headers = new  HttpHeaders().set("Authorization", this.authToken);
+  // Add the content type: json | Add the value to a header
+  headers.append('Content-Type', 'application/json');
+  // Return an observable with the response to our server  
+  return this.http.put(environment.apiUrl + 'users/manager/update/' + user._id, user, { headers });
+  // Map the response to json
+}
+
+
+  deleteUser(id:string){
+    // Set a header value
+    const  headers = new  HttpHeaders().set("Authorization", this.authToken);
+    // Add the content type: json | Add the value to a header
+    headers.append('Content-Type', 'application/json');
+    // Return an observable with the response to our server
+    return this.http.delete(environment.apiUrl + 'users/manager/delete/' + id, { headers });
+  }
+
+
+
+  /// HELPERS
 
   // Function to store the data in the local storage
   storeUserData(token, user) {
@@ -69,8 +116,16 @@ export class AuthService {
     }
   }
 
+  loadUser(): void {
+    this.user = JSON.parse(localStorage.getItem('user'));
+  }
+
+  getUser(): User{
+    return this.user
+  }
+
   // Function to return if the token is not expired
-  loggedIn() {
+  loggedIn(): boolean  {
     if(!this.jwtHelper.isTokenExpired()){
       this.logged.next(true);
     }

@@ -43,7 +43,7 @@ module.exports.addSaving = function(newSaving, callback) {
 }
 
 module.exports.getAll = (callback) => {
-  Saving.find(callback).find();
+  Saving.find(callback).sort([['start', 1]])
 }
 
 module.exports.delete = (id, callback) => {
@@ -59,17 +59,10 @@ module.exports.update = (data, callback) => {
 };
 
 module.exports.getSavingsByUser = (userId, callback) => {
-  Saving.aggregate([{
-      $match: {
-        userId: userId
-      }
-    },
-    {
-      $sort: {
-        start: 1
-      }
-    }
-  ], callback);
+  const query = {
+    userId: userId
+  }
+  Saving.find(query,callback).sort([['start', 1]])
 }
 
 

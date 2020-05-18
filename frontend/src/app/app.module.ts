@@ -20,10 +20,13 @@ import { AuthService } from './services/auth.service';
 // Libraries
 import { JwtModule } from '@auth0/angular-jwt';
 import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
+import { ManagerGuard } from './guards/manager.guard';
 
 
 import { ToastrModule } from 'ngx-toastr';
 import { AddSavingComponent } from './components/saving/saving.component';
+import { UsersComponent } from './components/users/users.component';
 
 
 @NgModule({
@@ -34,7 +37,8 @@ import { AddSavingComponent } from './components/saving/saving.component';
     LoginComponent,
     NavbarComponent,
     ProfileComponent,
-    AddSavingComponent
+    AddSavingComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +61,9 @@ import { AddSavingComponent } from './components/saving/saving.component';
     ValidateService,
     SavingService,
     AuthService,
-    AuthGuard
+    AuthGuard,
+    AdminGuard,
+    ManagerGuard
   ],
   bootstrap: [AppComponent]
 })

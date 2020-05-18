@@ -8,9 +8,10 @@
         <li class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/']">Home</a></li>
       </ul>
       <ul class=" navbar-nav mt-auto">
-        <li *ngIf="loggedIn" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/profile']">Profile</a></li>
-        <li *ngIf="!loggedIn" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/login']">Login</a></li>
-        <li *ngIf="!loggedIn" class="nav-item" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a class="nav-link" [routerLink]="['/register']">Register</a></li>
+        <li *ngIf="loggedIn" class="nav-item" ><a class="nav-link" [routerLink]="['/profile']">Profile</a></li>
+        <li *ngIf="user.type == 'm' || user.type == 'a'" class="nav-item" [routerLinkActive]="['active']" ><a class="nav-link" [routerLink]="['/users']">Users</a></li>
+        <li *ngIf="!loggedIn" class="nav-item" [routerLinkActive]="['active']"><a class="nav-link" [routerLink]="['/login']">Login</a></li>
+        <li *ngIf="!loggedIn" class="nav-item" [routerLinkActive]="['active']"><a class="nav-link" [routerLink]="['/register']">Register</a></li>
         <li *ngIf="loggedIn" class="nav-item"><a class="nav-link" (click)="onLogoutClick()">LogOut</a></li>
       </ul>
     </div>

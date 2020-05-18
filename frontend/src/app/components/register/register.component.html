@@ -21,6 +21,14 @@
           <label>Password</label>
           <input type="password" class="form-control" [(ngModel)]="user.password" name="password" placeholder="password" required>
         </div>
+        <div *ngIf="edit" class="form-group">
+          <label>Type</label>
+          <select  class="form-control" name="type" [(ngModel)]="user.type">
+            <option value='a'>Admin</option>
+            <option value='m'>Manager</option>
+            <option value='r'>Regular</option>
+          </select>
+        </div>
         <button type="submit" class="btn btn-primary" value="Submit">Register</button>
       </form>
     </div>

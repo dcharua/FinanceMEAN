@@ -4,6 +4,7 @@ import { User } from '../../models/user';
 import { SavingService } from 'src/app/services/saving.service';
 import { Saving } from 'src/app/models/saving';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
 declare var swal: any;
 @Component({
   selector: 'app-profile',
@@ -12,30 +13,70 @@ declare var swal: any;
 })
 export class ProfileComponent implements OnInit {
 
-  user: User;
+  user: User = new User();
   savings: Saving[] = []
   loading = true;
+  total_balance = 0;
+  taxes_paid = 0;
+  interests_balance = 0;
+  total_initial = 0;
   constructor(
     private authService: AuthService,
     private savingsService: SavingService,
-    private toast: ToastrService
+    private toast: ToastrService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.authService.getProfile().subscribe((profile:any) => {
-      this.user = profile.user;
-      this.savingsService.getSavingsByUser(this.user._id).subscribe((res:any) => {
-        console.log(res)
-        if(res.success){
-          this.savings = res.data
-        }
-        this.loading = false;
-      })
-    },
-    err => {
-      console.log(err);
-      return false;
+    this.route.paramMap.subscribe(paramMap => {
+      // if route has a param than is and admin getting a user profile
+			if (paramMap.has('id')) {
+        this.savingsService.getSavingsByUser(paramMap.get('id')).subscribe((res:any) => {
+          if(res.success){
+            this.resetBalance();
+            this.savings = res.data
+            this.savings.map(saving => this.calTotalBalance(saving))
+            this.loading = false;
+          }
+          this.loading = false;
+        })
+
+      // else if a user gettig his profile
+      } else {
+        this.authService.getProfile().subscribe((profile:any) => {
+          this.user = profile.user;
+          this.savingsService.getSavingsByUser(this.user._id).subscribe((res:any) => {
+            if(res.success){
+              this.resetBalance();
+              this.savings = res.data
+              this.savings.map(saving => this.calTotalBalance(saving))
+              console.log(this.savings)
+            }
+            this.loading = false;
+          })
+        },
+        err => {
+          console.log(err);
+          return false;
+        });
+      }
     });
+  }
+
+  calTotalBalance(saving: Saving): Saving{
+    saving.total_balance = saving.balance + saving.interest_balance -  saving.taxes_paid;
+    this.total_initial+= saving.balance;
+    this.total_balance+= saving.total_balance;
+    this.interests_balance += saving.interest_balance;
+    this.taxes_paid += saving.taxes_paid;
+    return saving
+  }
+
+  resetBalance():void{
+    this.total_balance = 0;
+    this.taxes_paid = 0;
+    this.interests_balance = 0;
+    this.total_initial = 0;
   }
 
   deleteSaving(id: string){
@@ -51,6 +92,7 @@ export class ProfileComponent implements OnInit {
         if(res.success){
           this.toast.success("Saving was deleted succesfully");
           this.savingsService.getSavingsByUser(this.user._id).subscribe((res:any) => {
+            this.resetBalance();
             if(res.success){
               this.savings = res.data
             }

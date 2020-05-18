@@ -8,4 +8,7 @@ export class Saving{
     end: Date;
     interest: number;
     taxes: number;
+    interest_balance?: number;
+    taxes_paid?: number;
+    total_balance?: number; 
 }

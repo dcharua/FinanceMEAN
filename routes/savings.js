@@ -13,6 +13,8 @@ router.all("/*", passport.authenticate('jwt', {
   // if it is valid allow next() got to route;
   next();
 });
+
+
 // Register a Saving
 router.post('/add', (req, res, next) => {
   const user = res.locals.user;
@@ -58,17 +60,17 @@ router.get('/getAll', (req, res) => {
   const user = res.locals.user;
   // check if user is admin
   if (user.type == 'a'){
-    Saving.getAll(req, (err, savings) => {
-      console.log(req)
+    Saving.getAll((err, data) => {
       if (err) {
         res.status(500).json({
           success: false,
-          msg: savings
+          msg: err
         });
       } else {
+       
         res.status(200).json({
           success: true,
-          data: savings
+          data:  calculateInterest(data)
         });
       }
     });
@@ -95,7 +97,7 @@ router.get('/get/:id', (req, res) => {
         if (data.userId == user._id || user.type == 'a'){
           res.status(200).json({
             success: true,
-            data: data
+            data: calculateInterest(data)
           });
         } else {
           res.status(401).json({
@@ -224,7 +226,7 @@ router.get('/getSavingsByUser/:id', (req, res) => {
       } else {
         res.status(200).json({
           success: true,
-          data: data
+          data: calculateInterest(data)
         });
       }
     });
@@ -234,8 +236,52 @@ router.get('/getSavingsByUser/:id', (req, res) => {
       msg: 'Not authorized'
     });
   }
-
 });
+
+
+
+function calculateInterest(savings){
+  // if its and array map it 
+  if (savings.length){
+    return savings.map(saving => {
+      return getInt(saving)
+    });
+  // if its just an object  
+  } else {
+    return getInt(savings);
+  }
+}
+
+// get days from start to today
+function getDays(date){
+  today = new Date()
+  // if date is in the future
+  if (date > today) return 0
+  
+  const oneDay = 24 * 60 * 60 * 1000;
+  return Math.round(Math.abs((date - today) / oneDay));
+}
+
+// main funtion to calculate interest
+function getInt(saving){
+  let castObj = saving.toObject();
+  const days_elapsed = getDays(castObj.start);
+  if (days_elapsed > 0){
+    const interest_made = (days_elapsed / 360) * castObj.interest;
+    castObj.interest_balance = (castObj.balance * interest_made) / 100;
+    if (castObj.interest_balance > 0){
+      const taxes_made = (days_elapsed / 360) * castObj.taxes;
+      castObj.taxes_paid = (castObj.interest_balance * taxes_made) / 100;
+    } else{
+      castObj.taxes_paid = 0;
+    }
+  } else {
+    castObj.interest_balance = 0;
+    castObj.taxes_paid = 0;
+  }
+  return castObj;
+}
 
 // Router module for make the petitions
 module.exports = router;
+

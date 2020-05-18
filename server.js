@@ -73,9 +73,9 @@ app.get('/', (req, res) => {
   res.send('Invalid Endpoint');
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'front/dist/index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'front/dist/index.html'));
+// });
 
 // Start Server on the port setted
 app.listen(process.env.PORT || 8081, () => {

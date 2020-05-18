@@ -1,0 +1,36 @@
+<div *ngIf="loading" class="lds-ring abs-center">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  
+  <div class="position-relative overflow-hidden p-3 p-md-3 m-md-3 text-center bg-light">
+    <div class="col-md-12 p-lg-5 mx-auto my-6">
+      <a class="btn btn-outline-secondary buttonsMargins" [routerLink]="['/register']">Add User</a>
+      <h2 class="page-header">View Users</h2>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>   
+                <th scope="col" class="font-weight-bold">Name</th>
+                <th scope="col" class="font-weight-bold">Email</th>
+                <th scope="col" class="font-weight-bold">Type</th>
+                <th scope="col" class="font-weight-bold">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of users">
+                <td>{{u.name}}</td>
+                <td>{{u.email}}</td>
+                <td>{{u.type}}<td>
+                <td>
+                  <button *ngIf="user.type == 'a'" type="button" class="btn btn-success mar-r-1"  [routerLink]="[ '/view-profile', u._id ]">Savings</button>
+                  <button type="button" class="btn btn-info mar-r-1"  [routerLink]="[ '/edit-user', u._id ]">Edit</button>
+                  <button type="button" class="btn btn-danger" (click)="deleteUser(u._id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>

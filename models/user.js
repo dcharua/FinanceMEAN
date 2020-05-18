@@ -56,7 +56,20 @@ module.exports.comparePassword = (candidatePassword, hash, callback) => {
   });
 }
 
+module.exports.updateUser = (updateUser, callback) => {
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(updateUser.password, salt, (err, hash) => {
+      if (err) throw err;
+      updateUser.password = hash;
+      User.findByIdAndUpdate({ _id: updateUser._id}, updateUser , callback);
+    });
+  });
+}
 
 module.exports.getAll = (callback) => {
-  User.find(callback).limit(1000);
+  User.find(callback);
 }
+
+module.exports.delete = (id, callback) => {
+  User.findByIdAndDelete(id, callback);
+};

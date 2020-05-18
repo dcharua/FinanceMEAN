@@ -5,6 +5,17 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/database');
 const User = require('../models/user');
 
+// for all the savings route we want user to be authorized
+router.all("/manager/*", passport.authenticate('jwt', {
+  // if it is not valid return session as false
+  session: false
+}), (req, res, next) => {
+  // return user to check credentials 
+  res.locals.user  = req.user;
+  // if it is valid allow next() got to route;
+  next();
+});
+
 //Register a user
 router.post('/register', (req, res, next) => {
   // Create a new user with the information that they subscribed
@@ -111,20 +122,131 @@ router.get('/profile', passport.authenticate('jwt', {
 
 
 
-router.get('/getAll', (req, res, next) => {
-  User.getAll((err, savings) => {
-    if (err) {
-      res.json({
-        success: false,
-        msg: err
-      });
-    } else {
-      res.json({
-        success: true,
-        data: savings
-      });
-    }
-  });
+router.get('/manager/getUsers', (req, res, next) => {
+  const user = res.locals.user;
+  // check if user is admin
+  if (user.type == 'a' || user.type == 'm'){
+    User.getAll((err, savings) => {
+      if (err) {
+        res.json({
+          success: false,
+          msg: err
+        });
+      } else {
+        res.json({
+          success: true,
+          data: savings
+        });
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      msg: 'Not authorized'
+    });
+  }
+});
+
+router.get('/manager/get/:id', (req, res) => {
+  const user = res.locals.user;
+  const { id } = req.params;
+  if (user.type == 'a' || user.type == 'm'){
+    User.getUserById(id, (err, data) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          msg: err
+        });
+      } else {
+        // check if user is owner of admin
+        res.status(200).json({
+          success: true,
+          data: data
+        });
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      msg: 'Not authorized'
+    });
+  }
+});
+
+//Register a user
+router.put('/manager/update/:id', (req, res, next) => {
+  const user = res.locals.user;
+
+  if (user.type == 'a' || user.type == 'm'){
+    // Create a new user with the information that they subscribed
+    let updateUser = new User({
+      _id: req.body._id,
+      name: req.body.name,
+      email: req.body.email,
+      username: req.body.username,
+      password: req.body.password,
+      type: req.body.type
+    });
+
+    const username = req.body.username;
+
+    User.getUserByUsername(username, (err, user) => {
+      if (err) throw err;
+      if (user) {
+        // Add the user to the db
+        User.updateUser(updateUser, (err, user) => {
+          // Return the success state as false if it couldn't be registered
+          if (err) {
+            res.json({
+              success: false,
+              msg: err
+            });
+            // Return the success state as true if it could be registered
+          } else {
+            res.json({
+              success: true,
+              data: user
+            });
+          }
+        });
+      } else {
+        return res.json({
+          success: false,
+          msg: 'That username is already taken'
+        });
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      msg: 'Not authorized'
+    });
+  }
+});
+
+router.delete('/manager/delete/:id', (req, res) => {
+  const user = res.locals.user;
+  const { id } = req.params;
+  if (user.type == 'a' || user.type == 'm'){
+    User.delete(id, (err, data) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          msg: err
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          data: data
+        });
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      msg: 'Not authorized'
+    });
+  }
 });
 
 // Router module for make the petitions

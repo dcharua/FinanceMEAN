@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { logging } from 'protractor';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +13,8 @@ import { logging } from 'protractor';
 export class NavbarComponent implements OnInit {
   loggedIn = false;
   ref: any;
+  user: User = new User();
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -20,9 +23,14 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.authService.loggedIn();
+    // subscription to check if user logged in
     this.ref = this.authService.isLogged().subscribe(res => {
       this.loggedIn = res;
+      if (this.loggedIn){
+        this.user = this.authService.getUser();
+      }
     });
+    
   }
   onLogoutClick() {
     // Send the instruction to clear the local storage and the memory of the user logged in

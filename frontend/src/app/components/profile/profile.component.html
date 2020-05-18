@@ -9,17 +9,30 @@
   <div class="col-md-12 p-lg-5 mx-auto my-6" *ngIf="user">
     <a class="btn btn-outline-secondary buttonsMargins" [routerLink]="['/add-saving']">Add Saving</a>
       <h2 class="page-header" style="font-size: 4em; color: #009ebb;">{{user.name}} Savings</h2>
+      <div class="row mar-t-b-2" >
+        <div class="col-md-6">
+          <h5>Initial balance: <span [ngClass]="total_balance >= total_initial ? 'green' : 'red'">{{total_initial | currency}}</span></h5>
+          <h5>Current balance: <span>{{total_balance | currency}}</span></h5>
+        </div>
+        <div class="col-md-6">
+          <h5>Interests balance: <span [ngClass]="interests_balance >= 0 ? 'green' : 'red'">{{interests_balance| currency}}</span> </h5>
+          <h5>Taxes : <span>{{taxes_paid| currency}}</span> </h5>
+        </div>
+      </div>
       <div class="table-responsive">
         <table class="table table-bordered">
           <thead>
             <tr>
               <th scope="col" class="font-weight-bold">Bank</th>
               <th scope="col" class="font-weight-bold">Account</th>
-              <th scope="col" class="font-weight-bold">Balance</th>
+              <th scope="col" class="font-weight-bold">Initial balance</th>
               <th scope="col" class="font-weight-bold">Start</th>
               <th scope="col" class="font-weight-bold">End</th>
               <th scope="col" class="font-weight-bold">Interest</th>
+              <th scope="col" class="font-weight-bold">Interest balance</th>
               <th scope="col" class="font-weight-bold">Taxes</th>
+              <th scope="col" class="font-weight-bold">Taxes paid</th>
+              <th scope="col" class="font-weight-bold">Current balance</th>
               <th scope="col" class="font-weight-bold">Actions</th>
             </tr>
           </thead>
@@ -30,12 +43,30 @@
               <td>{{saving.balance | currency}}</td>
               <td>{{saving.start | date: 'MM/dd/yyyy'}}</td>
               <td>{{saving.end | date: 'MM/dd/yyyy'}}</td>
-              <td>{{saving.interest | number }}</td>
-              <td>{{saving.taxes | number }}</td>
+              <td>{{saving.interest | number }}%</td>
+              <td  [ngClass]="saving.interest_balance >= 0 ? 'green' : 'red'">{{saving.interest_balance | currency }}</td>
+              <td>{{saving.taxes | number }}%</td>
+              <td>{{saving.taxes_paid | currency }}</td>
+              <td [ngClass]="saving.total_balance >= saving.balance ? 'green' : 'red'">
+                {{saving.total_balance | currency }}
+              </td>
               <td>
                 <button type="button" class="btn btn-info mar-r-1"  [routerLink]="[ '/edit-saving', saving._id ]">Edit</button>
                 <button type="button" class="btn btn-danger" (click)="deleteSaving(saving._id)">Delete</button>
               </td>
+            </tr>
+            <tr>
+              <th scope="col" class="font-weight-bold">Total</th>
+              <th scope="col" class="font-weight-bold"></th>
+              <th scope="col" class="font-weight-bold">{{total_initial| currency}}</th>
+              <th scope="col" class="font-weight-bold"></th>
+              <th scope="col" class="font-weight-bold"></th>
+              <th scope="col" class="font-weight-bold"></th>
+              <th scope="col" class="font-weight-bold" [ngClass]="interests_balance >= 0 ? 'green' : 'red'" >{{interests_balance| currency}}</th>
+              <th scope="col" class="font-weight-bold"></th>
+              <th scope="col" class="font-weight-bold">{{taxes_paid | currency}}</th>
+              <th scope="col" class="font-weight-bold" [ngClass]="total_balance >= total_initial ? 'green' : 'red'">{{total_balance | currency}}</th>
+              <th scope="col" class="font-weight-bold"></th>
             </tr>
           </tbody>
         </table>
