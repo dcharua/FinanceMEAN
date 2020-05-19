@@ -7,7 +7,7 @@
 
 <div class="position-relative overflow-hidden p-3 p-md-3 m-md-3 text-center bg-light">
   <div class="col-md-12 p-lg-5 mx-auto my-6" *ngIf="user">
-    <a class="btn btn-outline-secondary buttonsMargins" [routerLink]="['/add-saving']">Add Saving</a>
+    <a [routerLink]="['/add-saving']"><button class="btn btn-outline-secondary buttonsMargins">Add Saving</button></a>
       <h2 class="page-header" style="font-size: 4em; color: #009ebb;">{{user.name}} Savings</h2>
       <div class="row mar-t-b-2" >
         <div class="col-md-6">
@@ -19,6 +19,32 @@
           <h5>Taxes : <span>{{taxes_paid| currency}}</span> </h5>
         </div>
       </div>
+
+      <div class="row mar-b-1" >
+        <div class="col-md-3 col-sm-12">
+          <label>Bank name</label>
+          <select  class="form-control" name="type" [(ngModel)]="filters.bank">
+            <option value=''>All</option>
+            <option *ngFor="let bank of banks" [value]="bank">{{bank}}</option>
+          </select>
+        </div>
+        <div class="col-md-2 col-sm-12">
+          <label>Min initial balance</label>
+          <input type="number" class="form-control" (change)="filters.balance_lower = $event.target.value">
+        </div>
+        <div class="col-md-2 col-sm-12">
+          <label>Max initial balance</label>
+          <input type="number" class="form-control" (change)="filters.balance_higher = $event.target.value">
+        </div>
+        <div class="col-md-3 col-sm-12">
+          <label>Start date from</label>
+          <input type="date" class="form-control" (change)="filters.start = $event.target.value" name="start">
+        </div>
+        <div class="col-md-2 col-sm-12">
+          <button class="btn btn-success btn-filter" (click)="filterSavings()">Filter</button>
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table class="table table-bordered">
           <thead>

@@ -65,26 +65,6 @@ module.exports.getSavingsByUser = (userId, callback) => {
   Saving.find(query,callback).sort([['start', 1]])
 }
 
-
-
-module.exports.getSumSavingsByUser = (userIdRecived, callback)  => {
-  Saving.aggregate([{
-      $match: {
-        userId: userIdRecived
-      }
-    },
-    {
-      $group: {
-        _id: null,
-        AllSavings: {
-          $sum: "$balance"
-        }
-      }
-    },
-    {
-      $project: {
-        AllSavings: 1
-      }
-    }
-  ], callback);
+module.exports.getFilterSavingsByUser = (query, callback)  => {
+  Saving.find(query, callback).sort([['start', 1]])
 }

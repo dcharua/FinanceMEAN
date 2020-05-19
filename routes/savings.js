@@ -184,32 +184,6 @@ router.delete('/delete/:id', (req, res) => {
     }
   });
 });
-// Get sum of savings
-router.post('/getSumSavingsByUser', (req, res) => {
-  const user = res.locals.user;
-  const { id } = req.params;
-  // check if user is owner of admin
-  if (user._id == id || user.type == 'a'){
-    Saving.getSumSavingsByUser(id, (err, total) => {
-      if (err) {
-        res.status(500).json({
-          success: false,
-          msg: err
-        });
-      } else {
-        res.status(200).json({
-          success: true,
-          data: total
-        });
-      }
-    });
-  } else {
-    res.status(401).json({
-      success: false,
-      msg: 'Not authorized'
-    });
-  }
-});
 
 // Get savings by user
 router.get('/getSavingsByUser/:id', (req, res) => {
@@ -238,10 +212,55 @@ router.get('/getSavingsByUser/:id', (req, res) => {
   }
 });
 
+// Get sum of savings
+router.post('/getFilterSavingsByUser/:id', (req, res) => {
+  const user = res.locals.user;
+  const { id } = req.params;
+  // construct the filters
+  const query = {
+    userId: id,
+    bank: req.body.bank, 
+    balance: { $lte: req.body.balance_higher, $gte: req.body.balance_lower },
+    start: {$gte: req.body.start}
+  }
+  if (!req.body.bank){
+    delete query.bank
+  }
+  if (!req.body.start){
+    delete query.start
+  }
+
+  // check if user is owner of admin
+  if (user._id == id || user.type == 'a'){
+    Saving.getFilterSavingsByUser(query, (err, data) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          msg: err
+        });
+      } else {
+        console.log(data.length)
+        res.status(200).json({
+          success: true,
+          data: calculateInterest(data)
+        });
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      msg: 'Not authorized'
+    });
+  }
+});
+
 
 
 function calculateInterest(savings){
-  // if its and array map it 
+  // check if object is empty
+  if (Object.keys(savings).length == 0){
+    return []
+  }
   if (savings.length){
     return savings.map(saving => {
       return getInt(saving)
@@ -264,6 +283,7 @@ function getDays(date){
 
 // main funtion to calculate interest
 function getInt(saving){
+
   let castObj = saving.toObject();
   const days_elapsed = getDays(castObj.start);
   if (days_elapsed > 0){

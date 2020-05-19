@@ -12,7 +12,13 @@ declare var swal: any;
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-
+  filters = {
+    bank: '', 
+    balance_lower: '',
+    balance_higher: '',
+    start: ''
+  }
+  banks: string [] = []
   user: User = new User();
   savings: Saving[] = []
   loading = true;
@@ -20,6 +26,7 @@ export class ProfileComponent implements OnInit {
   taxes_paid = 0;
   interests_balance = 0;
   total_initial = 0;
+
   constructor(
     private authService: AuthService,
     private savingsService: SavingService,
@@ -69,6 +76,9 @@ export class ProfileComponent implements OnInit {
     this.total_balance+= saving.total_balance;
     this.interests_balance += saving.interest_balance;
     this.taxes_paid += saving.taxes_paid;
+    if(this.banks.indexOf(saving.bank) === -1){
+      this.banks.push(saving.bank)
+    }
     return saving
   }
 
@@ -77,6 +87,19 @@ export class ProfileComponent implements OnInit {
     this.taxes_paid = 0;
     this.interests_balance = 0;
     this.total_initial = 0;
+  }
+
+
+  filterSavings(){
+    this.loading = true;
+    this.savingsService.getFilterSavingsByUser(this.user._id, this.filters).subscribe((res:any) => {
+      if(res.success){
+        this.resetBalance();
+        this.savings = res.data
+        this.savings.map(saving => this.calTotalBalance(saving))
+      }
+      this.loading = false;
+    });
   }
 
   deleteSaving(id: string){

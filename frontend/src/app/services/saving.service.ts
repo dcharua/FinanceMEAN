@@ -61,6 +61,12 @@ export class SavingService {
     return this.http.get(environment.apiUrl + 'savings/getSavingsByUser/' + userId, {headers});
   }
 
+  getFilterSavingsByUser(userId: string, filters){
+    const  headers = new  HttpHeaders().set("Authorization", this.authToken);
+    // Return an observable with the response to our server  
+    return this.http.post(environment.apiUrl + 'savings/getFilterSavingsByUser/' + userId, filters, {headers});
+  }
+
   getAllSavings(){
     const  headers = new  HttpHeaders().set("Authorization", this.authToken);
     // Return an observable with the response to our server  
