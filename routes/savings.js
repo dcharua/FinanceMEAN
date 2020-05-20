@@ -70,7 +70,7 @@ router.get('/getAll', (req, res) => {
        
         res.status(200).json({
           success: true,
-          data:  calculateInterest(data)
+          data:  calculateInterest(data, null)
         });
       }
     });
@@ -97,7 +97,7 @@ router.get('/get/:id', (req, res) => {
         if (data.userId == user._id || user.type == 'a'){
           res.status(200).json({
             success: true,
-            data: calculateInterest(data)
+            data: calculateInterest(data, null)
           });
         } else {
           res.status(401).json({
@@ -212,6 +212,35 @@ router.get('/getSavingsByUser/:id', (req, res) => {
   }
 });
 
+// Get projected interest and texes form end date
+router.post('/getProjectionsByUser/:id', (req, res) => {
+  
+  const user = res.locals.user;
+  const { id } = req.params;
+  const end_date = req.body.end_date;
+  // check if user is owner of admin
+  if (user._id == id || user.type == 'a'){
+    Saving.getSavingsByUser(id, (err, data) => {
+      if (err) {
+        res.status(500).json({
+          success: false,
+          msg: err
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          data: calculateInterest(data, end_date)
+        });
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      msg: 'Not authorized'
+    });
+  }
+});
+
 // Get sum of savings
 router.post('/getFilterSavingsByUser/:id', (req, res) => {
   const user = res.locals.user;
@@ -239,7 +268,6 @@ router.post('/getFilterSavingsByUser/:id', (req, res) => {
           msg: err
         });
       } else {
-        console.log(data.length)
         res.status(200).json({
           success: true,
           data: calculateInterest(data)
@@ -256,45 +284,48 @@ router.post('/getFilterSavingsByUser/:id', (req, res) => {
 
 
 
-function calculateInterest(savings){
+function calculateInterest(savings, end_date){
   // check if object is empty
   if (Object.keys(savings).length == 0){
     return []
   }
   if (savings.length){
     return savings.map(saving => {
-      return getInt(saving)
+      return getInt(saving, end_date)
     });
   // if its just an object  
   } else {
-    return getInt(savings);
+    return getInt(savings, end_date);
   }
 }
 
 // get days from start to today
-function getDays(date){
-  today = new Date()
+function getDays(start, end, end_date){
+  // if we recive date (projection) make that today otherwise get today's date
+  today = end_date ? new Date(end_date) : new Date();
   // if date is in the future
-  if (date > today) return 0
-  
+  if (start > today) return 0
+  if (today > end){
+    today = end;
+  } 
+  // formula to calulcate days elepsed from two JS dates
   const oneDay = 24 * 60 * 60 * 1000;
-  return Math.round(Math.abs((date - today) / oneDay));
+  return Math.round(Math.abs((start - today) / oneDay));
 }
 
 // main funtion to calculate interest
-function getInt(saving){
+function getInt(saving, end_date){
 
   let castObj = saving.toObject();
-  const days_elapsed = getDays(castObj.start);
+  // get how many days have passes from start.date to end.date
+  const days_elapsed = getDays(castObj.start, castObj.end, end_date);
   if (days_elapsed > 0){
+    // calulcate interest made, days dividend by 360 time the interest rate to get interest so far
     const interest_made = (days_elapsed / 360) * castObj.interest;
     castObj.interest_balance = (castObj.balance * interest_made) / 100;
-    if (castObj.interest_balance > 0){
-      const taxes_made = (days_elapsed / 360) * castObj.taxes;
-      castObj.taxes_paid = (castObj.interest_balance * taxes_made) / 100;
-    } else{
-      castObj.taxes_paid = 0;
-    }
+    // if interest is positive deduct taxes to interest made else taxes is 0
+    castObj.taxes_paid = castObj.interest_balance > 0 ? (castObj.interest_balance * castObj.taxes) / 100 : 0;
+  // if no days have passes since start date theres no interest and no taxes
   } else {
     castObj.interest_balance = 0;
     castObj.taxes_paid = 0;

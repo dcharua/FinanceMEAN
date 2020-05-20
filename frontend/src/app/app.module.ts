@@ -27,6 +27,9 @@ import { ManagerGuard } from './guards/manager.guard';
 import { ToastrModule } from 'ngx-toastr';
 import { AddSavingComponent } from './components/saving/saving.component';
 import { UsersComponent } from './components/users/users.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 
 
 @NgModule({
@@ -47,6 +50,8 @@ import { UsersComponent } from './components/users/users.component';
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule, 
+    MatDatepickerModule,
+    MatNativeDateModule,
     ToastrModule.forRoot(),
     // JWT set the JWT module with the local storage token
     JwtModule.forRoot({
@@ -63,7 +68,8 @@ import { UsersComponent } from './components/users/users.component';
     AuthService,
     AuthGuard,
     AdminGuard,
-    ManagerGuard
+    ManagerGuard,
+    MatNativeDateModule
   ],
   bootstrap: [AppComponent]
 })

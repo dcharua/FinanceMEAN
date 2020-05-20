@@ -1,7 +1,7 @@
 <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
     <div class="col-md-7 p-lg-5 mx-auto my-8">
       <div class="form-group">
-        <h2>Register</h2>
+        <h2>{{edit? 'Edit': 'Register'}}</h2>
       </div>
       <div class="dropdown-divider"></div>
       <form #f="ngForm" class="px-4 py-3" (ngSubmit)="onRegisterSubmit(f)">
@@ -17,7 +17,7 @@
           <label>Email</label>
           <input type="email" class="form-control" [(ngModel)]="user.email" name="email" placeholder="email@ejemplo.com" required>
         </div>
-        <div class="form-group">
+        <div class="form-group" *ngIf="!edit">
           <label>Password</label>
           <input type="password" class="form-control" [(ngModel)]="user.password" name="password" placeholder="password" required>
         </div>
@@ -29,7 +29,7 @@
             <option value='r'>Regular</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary" value="Submit">Register</button>
+        <button type="submit" class="btn btn-primary" value="Submit">{{edit ? 'Edit': 'Register'}}</button>
       </form>
     </div>
   </div>

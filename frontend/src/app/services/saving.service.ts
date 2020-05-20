@@ -73,4 +73,10 @@ export class SavingService {
     return this.http.get(environment.apiUrl + 'savings/getAll', {headers});
   }
 
+  getProjectionsByUser(userId: string, projection){
+    const  headers = new  HttpHeaders().set("Authorization", this.authToken);
+    // Return an observable with the response to our server  
+    return this.http.post(environment.apiUrl + 'savings/getProjectionsByUser/' + userId, {end_date: projection}, {headers});
+  }
+
 }

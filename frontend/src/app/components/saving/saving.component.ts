@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { User } from 'src/app/models/user';
-
+declare var $:any;
 @Component({
   selector: 'app-saving',
   templateUrl: './saving.component.html',
@@ -45,6 +45,7 @@ export class AddSavingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    $('.datepicker').datepicker();
     this.authService.getProfile().subscribe((profile:any) => {
       this.user = profile.user;
     },
@@ -64,7 +65,6 @@ export class AddSavingComponent implements OnInit {
     if (this.edit){
       this.savingService.editSaving(this.saving).subscribe((data:any) => {
         if (data.success) {
-          console.log(data)
           this.toastr.success('The saving has been edited');
           this.router.navigate(['/profile']);
         } else {
@@ -75,7 +75,6 @@ export class AddSavingComponent implements OnInit {
     } else {
       this.saving.userId = this.user._id;
       this.savingService.addSaving(this.saving).subscribe((data:any) => {
-        console.log(data)
         // Lets validate the response and show the user the response with an alert
         if (data.success) {
           this.toastr.success('The new saving has been saved');

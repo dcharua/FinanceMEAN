@@ -176,7 +176,7 @@ router.get('/manager/get/:id', (req, res) => {
 //Register a user
 router.put('/manager/update/:id', (req, res, next) => {
   const user = res.locals.user;
-
+  const { id } = req.params;
   if (user.type == 'a' || user.type == 'm'){
     // Create a new user with the information that they subscribed
     let updateUser = new User({
@@ -184,13 +184,12 @@ router.put('/manager/update/:id', (req, res, next) => {
       name: req.body.name,
       email: req.body.email,
       username: req.body.username,
-      password: req.body.password,
       type: req.body.type
     });
 
     const username = req.body.username;
 
-    User.getUserByUsername(username, (err, user) => {
+    User.getUserById(id, (err, user) => {
       if (err) throw err;
       if (user) {
         // Add the user to the db

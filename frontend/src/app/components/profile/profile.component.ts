@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit {
   taxes_paid = 0;
   interests_balance = 0;
   total_initial = 0;
+  projection:any;
 
   constructor(
     private authService: AuthService,
@@ -48,7 +49,7 @@ export class ProfileComponent implements OnInit {
           this.loading = false;
         })
 
-      // else if a user gettig his profile
+      // else if a user is gettig his profile
       } else {
         this.authService.getProfile().subscribe((profile:any) => {
           this.user = profile.user;
@@ -57,7 +58,6 @@ export class ProfileComponent implements OnInit {
               this.resetBalance();
               this.savings = res.data
               this.savings.map(saving => this.calTotalBalance(saving))
-              console.log(this.savings)
             }
             this.loading = false;
           })
@@ -70,18 +70,21 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  // get total numbers from savings
   calTotalBalance(saving: Saving): Saving{
     saving.total_balance = saving.balance + saving.interest_balance -  saving.taxes_paid;
     this.total_initial+= saving.balance;
     this.total_balance+= saving.total_balance;
     this.interests_balance += saving.interest_balance;
     this.taxes_paid += saving.taxes_paid;
+    // if bank name not in filter sarray end it
     if(this.banks.indexOf(saving.bank) === -1){
       this.banks.push(saving.bank)
     }
     return saving
   }
 
+  // function to reset balance when new savings are filter or projected
   resetBalance():void{
     this.total_balance = 0;
     this.taxes_paid = 0;
@@ -89,10 +92,27 @@ export class ProfileComponent implements OnInit {
     this.total_initial = 0;
   }
 
-
+  // filter savings by fileds given
   filterSavings(){
     this.loading = true;
     this.savingsService.getFilterSavingsByUser(this.user._id, this.filters).subscribe((res:any) => {
+      if(res.success){
+        this.resetBalance();
+        this.savings = res.data
+        this.savings.map(saving => this.calTotalBalance(saving))
+      }
+      this.loading = false;
+    });
+  }
+
+  // project interests and taxes to a date
+  getProjections(){
+    if(!this.projection){
+      this.toast.error('Please select a date and try again!');
+      return;
+    }
+    this.loading = true;
+    this.savingsService.getProjectionsByUser(this.user._id, this.projection).subscribe((res:any) => {
       if(res.success){
         this.resetBalance();
         this.savings = res.data

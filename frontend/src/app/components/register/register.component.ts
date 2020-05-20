@@ -59,9 +59,8 @@ export class RegisterComponent implements OnInit {
     // Use the service with the function and the user object as is an observable
     // we need to subscribe to it and inside we have the data back
     if(this.edit){
-      console.log(this.user)
+
       this.authService.updateUser(this.user).subscribe((res:any) => {
-        console.log(res)
         // Lets validate the response and show the user the response with an alert
         if (res.success) {
           this.toastr.success('User updated succesfull');
@@ -73,19 +72,20 @@ export class RegisterComponent implements OnInit {
           this.router.navigate(['/register']);
         }
       });
+    } else {      
+      this.authService.registerUser(this.user).subscribe((res:any) => {
+        // Lets validate the response and show the user the response with an alert
+        if (res.success) {
+          this.toastr.success('Registration succesfull, please log in');
+          // If the registration is success move to the login component
+          this.router.navigate(['/login']);
+        } else {
+          this.toastr.error('Something went wrong please try again');
+          // If the registration is success move to the login component
+          this.router.navigate(['/register']);
+        }
+      });
     }
-    this.authService.registerUser(this.user).subscribe((res:any) => {
-      // Lets validate the response and show the user the response with an alert
-      if (res.success) {
-        this.toastr.success('Registration succesfull, please log in');
-        // If the registration is success move to the login component
-        this.router.navigate(['/login']);
-      } else {
-        this.toastr.error('Something went wrong please try again');
-        // If the registration is success move to the login component
-        this.router.navigate(['/register']);
-      }
-    });
 
   }
 }

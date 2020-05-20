@@ -38,10 +38,26 @@
         </div>
         <div class="col-md-3 col-sm-12">
           <label>Start date from</label>
-          <input type="date" class="form-control" (change)="filters.start = $event.target.value" name="start">
+          <input name="start" [(ngModel)]="filters.start" [matDatepicker]="picker" class="form-control" placeholder="01/01/2010"
+          (click)="picker.open()" autocomplete="off" required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
         </div>
         <div class="col-md-2 col-sm-12">
           <button class="btn btn-success btn-filter" (click)="filterSavings()">Filter</button>
+        </div>
+      </div>
+
+      <div class="row mar-b-1" >
+        <div class="col-md-3 col-sm-12 mar-l-a">
+          <label>Projection to</label>
+          <input name="projection" [(ngModel)]="projection" [matDatepicker]="picker2" class="form-control" placeholder="01/01/2025"
+          (click)="picker2.open()" autocomplete="off" required>
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </div>
+        <div class="col-md-2 col-sm-12">
+          <button class="btn btn-info btn-filter" (click)="getProjections()">Projection</button>
         </div>
       </div>
 
