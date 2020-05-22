@@ -39,7 +39,8 @@ export class ProfileComponent implements OnInit {
     this.route.paramMap.subscribe(paramMap => {
       // if route has a param than is and admin getting a user profile
 			if (paramMap.has('id')) {
-        this.savingsService.getSavingsByUser(paramMap.get('id')).subscribe((res:any) => {
+        this.user._id = paramMap.get('id')
+        this.savingsService.getSavingsByUser(this.user._id).subscribe((res:any) => {
           if(res.success){
             this.resetBalance();
             this.savings = res.data

@@ -249,7 +249,8 @@ router.post('/getFilterSavingsByUser/:id', (req, res) => {
   const query = {
     userId: id,
     bank: req.body.bank, 
-    balance: { $lte: req.body.balance_higher, $gte: req.body.balance_lower },
+    balance: { $lte: req.body.balance_higher ? req.body.balance_higher : Number.MAX_VALUE, 
+      $gte: req.body.balance_lower ? req.body.balance_lower : Number.MIN_VALUE},
     start: {$gte: req.body.start}
   }
   if (!req.body.bank){

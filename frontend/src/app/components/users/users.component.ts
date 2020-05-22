@@ -42,7 +42,7 @@ export class UsersComponent implements OnInit {
     }).then((result) => { 
       this.authService.deleteUser(id).subscribe((res:any) => {
         if(res.success){
-          this.toast.success("Saving was deleted succesfully");
+          this.toast.success("User was deleted succesfully");
           this.authService.getUsers().subscribe((res:any)=> {
             if(res.success){
               this.users = res.data
